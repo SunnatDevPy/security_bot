@@ -38,7 +38,7 @@ async def send_welcome(message: Message, bot: Bot):
 
 @group_router.message(F.new_chat_member)
 async def on_bot_added_to_group(message: Message, bot: Bot):
-    if message.new_chat_member['id'] == bot.id:
+    if int(message.new_chat_member['id']) == int(bot.id):
         await bot.send_message(
             message.chat.id,
             f"Bot guruxga qo'shildi: {message.chat.title} (Gurux ID: {message.chat.id})"

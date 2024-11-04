@@ -3,7 +3,7 @@ import logging
 import sys
 
 from aiogram import Dispatcher, Bot
-from aiogram.types import BotCommand, BotCommandScopeChatAdministrators, ChatMemberAdministrator
+from aiogram.types import BotCommand, BotCommandScopeChatAdministrators, ChatMemberAdministrator, BotCommandScopeChat
 
 from bot.group import group_router
 from config import conf
