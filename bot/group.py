@@ -166,7 +166,7 @@ async def kick_user(message: Message, bot: Bot):
 UNWANTED_KEYWORDS = ['18+', 'xxx', 'adult', 'porn']
 
 
-@group_router.message(ContentType.VIDEO)
+@group_router.message(F.type == 'video')
 async def check_video_content(message: Message, bot: Bot):
     # Video caption yoki fayl nomini tekshirish
     if message.caption:
