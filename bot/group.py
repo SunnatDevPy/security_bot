@@ -88,11 +88,10 @@ class AddAdmin(StatesGroup):
 @group_router.message(Command("words"))
 async def add_bad_word(message: Message, bot: Bot):
     member = await bot.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in ['administrator', 'creator']:
+    if member.status in ['administrator', 'creator']:
+        await message.answer("So'zlar to'plami", reply_markup=await words())
+    else:
         await message.reply("Sizda xuquq yo'q.")
-        return
-
-    await message.answer("So'zlar to'plami", reply_markup=await words())
 
 
 @group_router.callback_query(F.data.startswith('words_'))
