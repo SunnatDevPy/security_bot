@@ -2,6 +2,7 @@ import re
 from datetime import timedelta, datetime
 
 from aiogram import Router, Bot, F
+from aiogram.enums import ContentType
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -84,15 +85,14 @@ class AddAdmin(StatesGroup):
     user_id = State()
 
 
-@group_router.callback_query(F.data == 'soz')
-async def add_bad_word(call: CallbackQuery):
-    await call.answer()
-    await call.message.answer("So'zlar to'plami", reply_markup=await words())
-
-
 @group_router.message(Command("words"))
-async def add_bad_word(call: Message):
-    await call.answer("So'zlar to'plami", reply_markup=await words())
+async def add_bad_word(message: Message, bot: Bot):
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status not in ['administrator', 'creator']:
+        await message.reply("Sizda xuquq yo'q.")
+        return
+
+    await message.answer("So'zlar to'plami", reply_markup=await words())
 
 
 @group_router.callback_query(F.data.startswith('words_'))
@@ -161,3 +161,23 @@ async def kick_user(message: Message, bot: Bot):
             pass
     else:
         await message.reply("Komanda ishga tushishi uchun xabarga yo'naltiring.")
+
+
+UNWANTED_KEYWORDS = ['18+', 'xxx', 'adult', 'porn']
+
+
+@group_router.message(ContentType.VIDEO)
+async def check_video_content(message: Message, bot: Bot):
+    # Video caption yoki fayl nomini tekshirish
+    if message.caption:
+        caption = message.caption.lower()
+        if any(keyword in caption for keyword in UNWANTED_KEYWORDS):
+            await message.reply("⚠️ Ushbu video nomaqbul kontentni o'z ichiga olishi mumkin!")
+            await bot.ban_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+            await bot.unban_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+            return
+
+    video = await message.video.get_file()
+    if any(keyword in video.file_path.lower() for keyword in UNWANTED_KEYWORDS):
+        await message.reply("⚠️ Ushbu video nomaqbul kontentni o'z ichiga olishi mumkin!")
+        await bot.unban_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)

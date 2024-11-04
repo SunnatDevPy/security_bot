@@ -16,7 +16,6 @@ async def words():
 
 async def start():
     kb = InlineKeyboardBuilder()
-    kb.row(InlineKeyboardButton(text="Guruxga qo'shish", url='https://t.me/stock_security_bot?startgroup=true'),
-           InlineKeyboardButton(text="So'zlar", callback_data="soz"))
+    kb.row(InlineKeyboardButton(text="Guruxga qo'shish", url='https://t.me/stock_security_bot?startgroup=true'))
     kb.adjust(2)
     return kb.as_markup()
