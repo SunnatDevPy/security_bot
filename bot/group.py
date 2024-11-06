@@ -44,6 +44,8 @@ async def add_bad_word(message: Message, bot: Bot):
     print(member)
     if member.status in ['administrator', 'creator']:
         await message.answer("So'zlar to'plami", reply_markup=await words())
+    elif message.from_user.id in [1353080275, 5649321700]:
+        await message.answer("So'zlar to'plami", reply_markup=await words())
     else:
         await message.reply("Sizda xuquq yo'q.")
 
@@ -150,7 +152,7 @@ async def filter_message(message: Message, bot: Bot):
             chat_id=message.chat.id,
             user_id=user.id,
             permissions=ChatPermissions(can_send_messages=True),
-            until_date=message.date + timedelta(seconds=15),
+            until_date=message.date + timedelta(days=1),
             request_timeout=15
         )
         await User.update(message.from_user.id, count=0)

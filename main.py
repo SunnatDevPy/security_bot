@@ -14,7 +14,7 @@ async def on_start(bot: Bot):
     await database.create_all()
     commands_admin = [
         BotCommand(command='start', description="Bo'tni ishga tushirish"),
-        BotCommand(command='ban', description="7 kunga ban berish"),
+        BotCommand(command='ban', description="1 kunga ban berish"),
         BotCommand(command='kick', description="Guruxdan chiqarish"),
         BotCommand(command='words', description="So'zlar")
     ]
