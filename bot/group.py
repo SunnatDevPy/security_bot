@@ -74,7 +74,7 @@ async def ban_user(message: Message, bot: Bot):
                 message.chat.id,
                 user_to_ban,
                 ChatPermissions(can_send_messages=False),
-                until_date=datetime.now() + timedelta(days=7)
+                until_date=datetime.now() + timedelta(days=1)
             )
             await message.reply(f"Foydalanuvchi 7 kunga bloklandi.")
         except Exception as e:
