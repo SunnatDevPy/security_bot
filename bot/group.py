@@ -6,7 +6,7 @@ from aiogram.enums import ContentType
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, CallbackQuery, ChatPermissions
+from aiogram.types import Message, CallbackQuery, ChatPermissions, ChatMemberUpdated
 
 from bot.buttuns.simple import start, words
 from db.models.model import Words, User
@@ -15,6 +15,60 @@ user_warnings = {}
 
 group_router = Router()
 
+words_text = [
+    'jala',
+    "kot",
+    "suka",
+    "gandon",
+    "am",
+    "qotaq",
+    "qotoq",
+    "qoto",
+    "jalap",
+    "dalbayob",
+    "oneni",
+    "ami",
+    "onangni",
+    "daxxuya",
+    "daxuya",
+    "qutaq",
+    "pidaraz",
+    "profilimda",
+    "sex",
+    "seks",
+    "yban",
+    "yeban",
+    "eban",
+    "oneyni",
+    "sikaman",
+    "skaman",
+    "bio",
+    "profilda",
+    "kotlar",
+    "kotla",
+    "naxuy",
+    "gandonla",
+    "gey",
+    "geylar",
+    "kutlar",
+    "пидараз",
+    "сука",
+    "ам",
+    "онени",
+    "ски",
+    "сикаман",
+    "котлар",
+    "blya",
+    "qotogm",
+    "гандон",
+    "yiban",
+    "ske",
+    "сикай",
+    "sikay",
+    "jallab",
+
+]
+
 
 def contains_link(message: Message):
     return bool(re.search(r'http[s]?://', message.text))
@@ -22,6 +76,13 @@ def contains_link(message: Message):
 
 async def contains_bad_word(message: Message):
     for word in await Words.get_all():
+        if word.text.lower() in message.text.lower():
+            return True
+    return False
+
+
+def contains_bad_words(message: Message):
+    for word in words_text:
         if word.text.lower() in message.text.lower():
             return True
     return False
@@ -50,12 +111,12 @@ async def add_bad_word(message: Message, bot: Bot):
         await message.reply("Sizda xuquq yo'q.")
 
 
-@group_router.message(F.new_chat_member)
-async def on_bot_added_to_group(message: Message, bot: Bot):
-    if int(message.new_chat_member['id']) == int(bot.id):
+@group_router.my_chat_member()
+async def on_bot_added_to_group(update: ChatMemberUpdated, bot: Bot):
+    if update.new_chat_member.user.id == bot.id and update.new_chat_member.status in ["administrator", "member"]:
         await bot.send_message(
-            message.chat.id,
-            f"Bot guruxga qo'shildi: {message.chat.title} (Gurux ID: {message.chat.id})"
+            update.chat.id,
+            f"✅ Bot guruxga qo'shildi: {update.chat.title} (ID: {update.chat.id})"
         )
 
 
@@ -137,7 +198,7 @@ async def filter_message(message: Message, bot: Bot):
         await message.answer(f"{message.from_user.first_name}, link tashlamang!")
         await User.update(user.id, count=user.count + 1)
 
-    elif await contains_bad_word(message):
+    elif await contains_bad_word(message) or contains_bad_words(message):
         await message.delete()
         await message.answer(f"{message.from_user.first_name}, haqoratli so'zlar yozmang!")
         await User.update(user.id, count=user.count + 1)
